@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Nemoto Worksは、毎日の小さな不便を軽くするシンプルなWebアプリを届けます。" />
+    <meta name="theme-color" content="#f5f1e8" />
+    <title>Nemoto Works — 小さく、役立つ道具を。</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Nemoto Works ホーム">
+        <span class="brand-mark" aria-hidden="true">N</span>
+        <span>Nemoto Works</span>
+      </a>
+      <nav aria-label="メインナビゲーション">
+        <a href="#apps">アプリ</a>
+        <a href="#about">私たちについて</a>
+        <a href="./privacy/">プライバシー</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <p class="eyebrow">SMALL TOOLS, BETTER DAYS</p>
+        <h1>小さく、<br />役立つ道具を。</h1>
+        <p class="hero-copy">Nemoto Worksは、毎日の「少し面倒」を軽くするシンプルなアプリをつくります。まずは、集中する時間を気持ちよく始めるタイマーから。</p>
+        <a class="primary-link" href="#timer">タイマーを使う <span aria-hidden="true">↓</span></a>
+        <div class="hero-orbit" aria-hidden="true">
+          <span class="orbit-dot"></span>
+          <span class="orbit-label">FOCUS</span>
+        </div>
+      </section>
+
+      <section class="timer-section" id="timer" aria-labelledby="timer-title">
+        <div class="section-heading">
+          <p class="eyebrow">01 / FOCUS TIMER</p>
+          <h2 id="timer-title">いまやることを、<br />ひとつだけ。</h2>
+        </div>
+
+        <div class="timer-card">
+          <div class="timer-modes" role="group" aria-label="時間を選択">
+            <button class="mode-button active" type="button" data-minutes="25">集中 25分</button>
+            <button class="mode-button" type="button" data-minutes="5">休憩 5分</button>
+            <button class="mode-button" type="button" data-minutes="15">長い休憩 15分</button>
+          </div>
+          <div class="timer-display" role="timer" aria-live="off" aria-label="残り時間">
+            <span id="minutes">25</span><span class="timer-colon">:</span><span id="seconds">00</span>
+          </div>
+          <div class="timer-progress" aria-hidden="true"><span id="progress-bar"></span></div>
+          <div class="timer-actions">
+            <button class="start-button" id="start-button" type="button">スタート</button>
+            <button class="reset-button" id="reset-button" type="button">リセット</button>
+          </div>
+          <p class="timer-status" id="timer-status">25分、集中してみましょう。</p>
+        </div>
+      </section>
+
+      <section class="apps-section" id="apps" aria-labelledby="apps-title">
+        <div class="section-heading">
+          <p class="eyebrow">TOOLS IN PROGRESS</p>
+          <h2 id="apps-title">日常に、ちょうどいい。</h2>
+        </div>
+        <div class="app-grid">
+          <article class="app-item available">
+            <span class="app-number">01</span>
+            <div>
+              <p class="app-state">AVAILABLE NOW</p>
+              <h3>集中タイマー</h3>
+              <p>作業と休憩のリズムを、迷わず始めるためのタイマー。</p>
+            </div>
+            <a href="#timer" aria-label="集中タイマーを使う">使う →</a>
+          </article>
+          <article class="app-item">
+            <span class="app-number">02</span>
+            <div>
+              <p class="app-state">COMING LATER</p>
+              <h3>次の小さな道具</h3>
+              <p>実験と改善を重ねながら、少しずつ公開していきます。</p>
+            </div>
+            <span class="muted">準備中</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="about-section" id="about" aria-labelledby="about-title">
+        <p class="eyebrow">ABOUT NEMOTO WORKS</p>
+        <div class="about-layout">
+          <h2 id="about-title">完璧を待たず、<br />使えるものを届ける。</h2>
+          <div>
+            <p>Nemoto Worksは、アイデアを小さく試し、本当に役立つ形へ育てていく個人開発プロジェクトです。</p>
+            <p>使う人の時間や気持ちに、ほんの少し余白が生まれる。そんな道具を目指しています。</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand footer-brand" href="#top"><span class="brand-mark" aria-hidden="true">N</span><span>Nemoto Works</span></a>
+      <div class="footer-links">
+        <a href="./about/">運営者情報</a>
+        <a href="./privacy/">プライバシーポリシー</a>
+        <a href="./contact/">お問い合わせ</a>
+      </div>
+      <p>© <span id="year"></span> Nemoto Works</p>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
