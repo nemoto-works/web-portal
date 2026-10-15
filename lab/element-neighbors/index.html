@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>お隣並べて — 周期表クイズ</title><style>
+:root{font-family:system-ui,sans-serif;color-scheme:dark;background:#0b1220;color:#eaf2ff}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:18px}.app{width:min(100%,460px)}h1{font-size:1.6rem;margin:0 0 8px}p{color:#a7b8d2;line-height:1.6}.panel{border:1px solid #33455d;border-radius:22px;padding:20px;background:#131f31}.stats{display:flex;justify-content:space-between;margin:0 0 24px;color:#a7b8d2}.element{margin:16px auto;padding:22px;width:150px;border-radius:18px;background:#254c72;text-align:center}.symbol{font-size:3.6rem;font-weight:800}.name{font-size:1.05rem}.options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}button{font:inherit;border:1px solid #54749c;border-radius:14px;background:#1c3553;color:#fff;padding:17px 10px;min-height:62px;cursor:pointer}button:disabled{opacity:.55}button:focus-visible{outline:3px solid #ffd86b}button.correct{background:#1a624e}button.wrong{background:#853b46}.feedback{min-height:54px;margin:18px 0 6px;font-weight:700}.next{width:100%;background:#326cd0}small{color:#9db0ca}a{color:#9fc7ff}</style></head>
+<body><main class="app"><h1>🧪 お隣並べて</h1><p>周期表の同じ行で、真横にある元素を当てよう！</p><section class="panel"><div class="stats"><span id="count">問題 1</span><span id="score">正解 0</span></div><div id="question">この元素の右隣は？</div><div class="element"><div id="symbol" class="symbol">Li</div><div id="name" class="name">リチウム</div></div><div id="options" class="options"></div><div id="feedback" class="feedback" aria-live="polite"></div><button id="next" class="next" hidden>次の問題 →</button></section><p><small>初版は第2・第3周期のみ。元素番号の前後ではなく、周期表で左右に隣接する元素を出題します。端の元素は隣がない側を出題しません。</small></p></main>
+<script>
+'use strict';
+const rows=[
+[{s:'Li',n:'リチウム'},{s:'Be',n:'ベリリウム'},{s:'B',n:'ホウ素'},{s:'C',n:'炭素'},{s:'N',n:'窒素'},{s:'O',n:'酸素'},{s:'F',n:'フッ素'},{s:'Ne',n:'ネオン'}],
+[{s:'Na',n:'ナトリウム'},{s:'Mg',n:'マグネシウム'},{s:'Al',n:'アルミニウム'},{s:'Si',n:'ケイ素'},{s:'P',n:'リン'},{s:'S',n:'硫黄'},{s:'Cl',n:'塩素'},{s:'Ar',n:'アルゴン'}]
+];
+const $=id=>document.getElementById(id);let score=0,count=0,current=null,answered=false,lastKey='';
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function newQuestion(){answered=false;count++;let row,i,dir,key;do{row=rows[Math.floor(Math.random()*rows.length)];i=Math.floor(Math.random()*row.length);dir=i===0?1:i===row.length-1?-1:Math.random()<.5?-1:1;key=row[i].s+dir}while(key===lastKey);lastKey=key;const correct=row[i+dir];current=correct;
+$('count').textContent='問題 '+count;$('score').textContent='正解 '+score;$('symbol').textContent=row[i].s;$('name').textContent=row[i].n;$('question').textContent='この元素の'+(dir===1?'右':'左')+'隣は？';$('feedback').textContent='';$('next').hidden=true;
+const others=shuffle(rows.flat().filter(e=>e.s!==correct.s&&e.s!==row[i].s)).slice(0,3);const opts=shuffle([correct,...others]);$('options').replaceChildren(...opts.map(e=>{const b=document.createElement('button');b.textContent=e.s+' · '+e.n;b.addEventListener('click',()=>answer(e.s,b));return b}))}
+function answer(s,clicked){if(answered)return;answered=true;const ok=s===current.s;if(ok)score++;$('score').textContent='正解 '+score;$('feedback').textContent=ok?'正解！ 🎉':'正解は '+current.s+'（'+current.n+'）';for(const b of $('options').children){b.disabled=true;if(b.textContent.startsWith(current.s+' ·'))b.classList.add('correct');else if(b===clicked)b.classList.add('wrong')}$('next').hidden=false;$('next').focus()}
+$('next').addEventListener('click',newQuestion);newQuestion();
+</script></body></html>
