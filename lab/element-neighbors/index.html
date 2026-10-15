@@ -8,9 +8,11 @@ const rows=[
 [{s:'Li',n:'リチウム'},{s:'Be',n:'ベリリウム'},{s:'B',n:'ホウ素'},{s:'C',n:'炭素'},{s:'N',n:'窒素'},{s:'O',n:'酸素'},{s:'F',n:'フッ素'},{s:'Ne',n:'ネオン'}],
 [{s:'Na',n:'ナトリウム'},{s:'Mg',n:'マグネシウム'},{s:'Al',n:'アルミニウム'},{s:'Si',n:'ケイ素'},{s:'P',n:'リン'},{s:'S',n:'硫黄'},{s:'Cl',n:'塩素'},{s:'Ar',n:'アルゴン'}]
 ];
+const columns=[1,2,13,14,15,16,17,18];
+const validMoves=rows.flatMap(row=>row.flatMap((element,i)=>[-1,1].filter(dir=>row[i+dir]&&Math.abs(columns[i+dir]-columns[i])===1).map(dir=>({row,i,dir,key:element.s+dir}))));
 const $=id=>document.getElementById(id);let score=0,count=0,current=null,answered=false,lastKey='';
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function newQuestion(){answered=false;count++;let row,i,dir,key;do{row=rows[Math.floor(Math.random()*rows.length)];i=Math.floor(Math.random()*row.length);dir=i===0?1:i===row.length-1?-1:Math.random()<.5?-1:1;key=row[i].s+dir}while(key===lastKey);lastKey=key;const correct=row[i+dir];current=correct;
+function newQuestion(){answered=false;count++;const candidates=validMoves.filter(move=>move.key!==lastKey);const {row,i,dir,key}=candidates[Math.floor(Math.random()*candidates.length)];lastKey=key;const correct=row[i+dir];current=correct;
 $('count').textContent='問題 '+count;$('score').textContent='正解 '+score;$('symbol').textContent=row[i].s;$('name').textContent=row[i].n;$('question').textContent='この元素の'+(dir===1?'右':'左')+'隣は？';$('feedback').textContent='';$('next').hidden=true;
 const others=shuffle(rows.flat().filter(e=>e.s!==correct.s&&e.s!==row[i].s)).slice(0,3);const opts=shuffle([correct,...others]);$('options').replaceChildren(...opts.map(e=>{const b=document.createElement('button');b.textContent=e.s+' · '+e.n;b.addEventListener('click',()=>answer(e.s,b));return b}))}
 function answer(s,clicked){if(answered)return;answered=true;const ok=s===current.s;if(ok)score++;$('score').textContent='正解 '+score;$('feedback').textContent=ok?'正解！ 🎉':'正解は '+current.s+'（'+current.n+'）';for(const b of $('options').children){b.disabled=true;if(b.textContent.startsWith(current.s+' ·'))b.classList.add('correct');else if(b===clicked)b.classList.add('wrong')}$('next').hidden=false;$('next').focus()}
