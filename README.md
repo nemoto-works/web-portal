@@ -2,6 +2,8 @@
 
 Nemoto Worksの公開用ポータルです。既存のPrivateリポジトリ `nemoto-works/workspace` とは分離して管理します。
 
+公開中のアプリ: `apps/visual-timer/`（20分割バー・円表示対応のビジュアルタイマー）
+
 ## Local preview
 
 静的ファイルだけで動作します。任意の静的Webサーバーでこのディレクトリを配信してください。
