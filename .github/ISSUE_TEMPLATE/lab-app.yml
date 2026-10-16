@@ -1,0 +1,54 @@
+name: LAB app request
+description: Codexで実装する小さなLAB試作品
+title: "[LAB] "
+labels: ["lab-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        このIssueは公開LAB用です。正式公開・販売・アカウント変更は対象外です。
+  - type: input
+    id: audience
+    attributes:
+      label: 誰のためのアプリか
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: 1分で説明
+      description: 何を解決し、どう使うかを短く書いてください。
+    validations:
+      required: true
+  - type: textarea
+    id: minimum
+    attributes:
+      label: 最小機能
+      description: 3分程度で試せる範囲に絞ってください。
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 受け入れ条件
+      value: |
+        - [ ] スマートフォンで主要操作ができる
+        - [ ] ログイン不要で試せる
+        - [ ] LAB以外のページを変更しない
+        - [ ] 自動テストに合格する
+    validations:
+      required: true
+  - type: textarea
+    id: excluded
+    attributes:
+      label: やらないこと
+      description: 正式公開、販売、外部投稿、アカウント設定変更は自動化しません。
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: 安全確認
+      options:
+        - label: 秘密情報・個人情報を入力していない
+          required: true
+        - label: このIssueは公開リポジトリで閲覧可能と理解した
+          required: true
