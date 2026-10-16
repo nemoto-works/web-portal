@@ -43,13 +43,16 @@ for (const path of all.filter((file) => extname(file) === '.html')) {
 }
 
 const index = await readFile(join(labRoot, 'index.html'), 'utf8');
+const portalIndex = await readFile(join(root, 'index.html'), 'utf8');
 for (const path of all.filter((file) => relative(labRoot, file).split('/').length === 2 && file.endsWith('/index.html'))) {
   const slug = relative(labRoot, join(path, '..'));
   const html = await readFile(path, 'utf8');
   const graduated = /<html[^>]+data-lab-graduated/i.test(html);
   if (graduated) {
     if (index.includes(`./${slug}/`)) errors.push(`lab/index.html: graduated app must not remain listed: ${slug}`);
-    if (!/<link[^>]+rel=["']canonical["'][^>]+href=["']https:\/\//i.test(html)) errors.push(`${relative(root, path)}: graduated app needs a public canonical URL`);
+    const canonical = html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["'](https:\/\/[^"']+)/i)?.[1];
+    if (!canonical) errors.push(`${relative(root, path)}: graduated app needs a public canonical URL`);
+    else if (!portalIndex.includes(canonical)) errors.push(`index.html: graduated app needs a production link: ${canonical}`);
   } else if (!index.includes(`./${slug}/`)) {
     errors.push(`lab/index.html: missing link to ${slug}`);
   }
