@@ -10,7 +10,7 @@ This public repository hosts the Nemoto Works website and its public LAB prototy
 - Keep prototypes dependency-light, mobile-first, and usable without login unless the issue explicitly requires otherwise.
 - Run `node scripts/validate-lab.mjs` before handing off a change.
 - Open a draft pull request. Do not merge it. The owner reviews a working LAB URL and chooses GO / revise / hold.
-- When a LAB app graduates to a dedicated public repository, remove its LAB card in the same release, replace the old route with a `data-lab-graduated` redirect page, and continue development only in the dedicated repository.
+- When a LAB app graduates to a dedicated public repository, add its public URL to the production app list, remove its LAB card in the same release, replace the old route with a `data-lab-graduated` redirect page, and continue development only in the dedicated repository.
 
 ## Code review rules
 
