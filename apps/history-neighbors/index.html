@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>歴史のお隣誰だ？ | Nemoto Works LAB</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#162b45;background:#f0f5fa}*{box-sizing:border-box}body{margin:0;padding:16px}main{max-width:900px;margin:auto}h1{font-size:1.5rem}.panel{background:white;border:1px solid #ccd8e5;border-radius:18px;padding:18px;margin:12px 0}.muted{color:#52657b;font-size:.9rem}button{font:inherit;cursor:pointer;border:1px solid #7390b1;border-radius:12px;padding:13px;background:#edf4ff;color:#17385e}button:focus-visible{outline:3px solid #e7a51e}button:disabled{opacity:.5;cursor:default}.actions{display:flex;gap:8px;flex-wrap:wrap}.answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.answers button{min-height:64px}.correct{background:#d7f6e5!important;border-color:#12845b!important}.wrong{background:#ffe1e1!important;border-color:#b42336!important}.timeline{overflow-x:auto;border:1px solid #d3dfea;border-radius:12px;background:#f7fafd;padding:10px 0}.track{position:relative;width:1900px;height:235px;background:linear-gradient(to bottom,transparent 49%,#8aa0ba 49%,#8aa0ba 50%,transparent 50%)}.tick{position:absolute;top:110px;height:20px;border-left:1px solid #9eafc1}.tick-label{position:absolute;top:135px;transform:translateX(-50%);font-size:12px;color:#52657b}.event{position:absolute;top:0;transform:translateX(-50%);width:142px;text-align:center}.event:nth-of-type(even){top:159px}.event .stem{height:44px;width:2px;background:#879db5;margin:4px auto}.event:nth-of-type(even) .stem{display:none}.event .dot{width:12px;height:12px;border-radius:50%;background:#879db5;margin:0 auto}.event .name{font-size:12px;font-weight:700;background:#fff;padding:5px;border-radius:8px;box-shadow:0 1px 4px #d2dbe8}.event .year{font-size:12px;color:#52657b}.event.future .name{color:#8a98a8;background:#eef2f7}.event.target .name{background:#ffeb99;color:#3b2c00;border:2px solid #cf9700}.event.target .dot{background:#d69a00}.event.done .dot{background:#0e8a5b}.event:nth-of-type(even) .dot{margin-top:0}.event:nth-of-type(even) .name{margin-top:10px}@media(max-width:520px){.answers{grid-template-columns:1fr}body{padding:10px}.panel{padding:12px}}
+</style></head><body><main><h1>🕰️ 歴史のお隣誰だ？</h1><p class="muted">Nemoto Works LAB / 日本史・積み上げ年表。年表上の「？」を古い順に埋めよう。</p>
+<section class="panel"><div class="actions"><button id="reset">学習を最初から</button><button id="review">復習問題</button></div><p id="progress" aria-live="polite"></p><div class="timeline" id="timeline" aria-label="年代に比例した横スクロール年表"><div class="track" id="track"></div></div><p class="muted">左右にスクロールして年表を確認できます。出来事の間隔は年数に比例しています。</p></section>
+<section class="panel"><h2 id="question">年表の「？」に入る出来事は？</h2><div class="answers" id="answers"></div><p id="feedback" aria-live="polite"></p><button id="next" hidden>次の出来事へ →</button></section>
+</main><script>
+'use strict';
+const events=[
+{year:593,name:'聖徳太子が推古天皇の摂政になる'},
+{year:645,name:'大化の改新'},
+{year:672,name:'壬申の乱'},
+{year:701,name:'大宝律令の制定'},
+{year:710,name:'平城京への遷都'},
+{year:743,name:'墾田永年私財法'},
+{year:794,name:'平安京への遷都'},
+{year:894,name:'遣唐使の停止'},
+{year:1016,name:'藤原道長が摂政になる'},
+{year:1086,name:'白河上皇の院政開始'},
+{year:1185,name:'壇ノ浦の戦い'},
+{year:1221,name:'承久の乱'},
+{year:1274,name:'文永の役'},
+{year:1333,name:'鎌倉幕府の滅亡'},
+{year:1392,name:'南北朝の合一'},
+{year:1467,name:'応仁の乱'},
+{year:1543,name:'鉄砲伝来'},
+{year:1600,name:'関ヶ原の戦い'},
+{year:1603,name:'江戸幕府の成立'},
+{year:1639,name:'ポルトガル船の来航禁止'},
+{year:1853,name:'ペリー来航'},
+{year:1868,name:'明治維新'},
+{year:1889,name:'大日本帝国憲法の発布'},
+{year:1945,name:'第二次世界大戦の終結'}
+];
+const key='nemoto-history-neighbors-v1';const $=id=>document.getElementById(id);
+let frontier=0,reviewIndex=null,answered=false,wasCorrect=false;
+try{frontier=Math.max(0,Math.min(events.length,Number(localStorage.getItem(key))||0))}catch{}
+const start=550,end=2000,width=1900,x=year=>50+(year-start)/(end-start)*(width-100);
+function questionIndex(){return reviewIndex===null?frontier:reviewIndex}
+function render(){
+ const idx=questionIndex(),finished=frontier>=events.length&&reviewIndex===null;
+ $('progress').textContent='年表に追加済み '+frontier+' / '+events.length+' 件'+(reviewIndex!==null?'（復習中）':'');
+ const track=$('track');track.replaceChildren();
+ for(let y=600;y<=2000;y+=100){const tick=document.createElement('div');tick.className='tick';tick.style.left=x(y)+'px';track.append(tick);const label=document.createElement('div');label.className='tick-label';label.style.left=x(y)+'px';label.textContent=y+'年';track.append(label)}
+ events.forEach((e,i)=>{const d=document.createElement('div');d.className='event '+(i===idx?'target':i<frontier?'done':'future');d.style.left=x(e.year)+'px';
+ const name=document.createElement('div');name.className='name';name.textContent=i===idx?'？':i<frontier?e.name:'●';
+ const year=document.createElement('div');year.className='year';year.textContent=e.year+'年';
+ const stem=document.createElement('div');stem.className='stem';const dot=document.createElement('div');dot.className='dot';d.append(name,year,stem,dot);track.append(d)});
+ $('answers').replaceChildren();$('feedback').textContent='';$('next').hidden=true;answered=false;wasCorrect=false;
+ if(finished){$('question').textContent='年表が完成しました！ 復習問題にも挑戦できます。';return}
+ const e=events[idx];$('question').textContent=e.year+'年の「？」に入る出来事は？';
+ const distractors=events.map((v,i)=>({v,i})).filter(o=>o.i!==idx).sort((a,b)=>Math.abs(a.v.year-e.year)-Math.abs(b.v.year-e.year)).slice(0,7);
+ const picked=[e,...distractors.sort(()=>Math.random()-.5).slice(0,3).map(o=>o.v)].sort(()=>Math.random()-.5);
+ picked.forEach(v=>{const b=document.createElement('button');b.textContent=v.name;b.onclick=()=>answer(v===e,b);$('answers').append(b)});
+ const target=track.querySelector('.target');if(target) $('timeline').scrollLeft=Math.max(0,x(e.year)-$('timeline').clientWidth/2);
+}
+function answer(ok,button){if(answered)return;answered=true;wasCorrect=ok;button.classList.add(ok?'correct':'wrong');
+ for(const b of $('answers').children){b.disabled=true;if(b.textContent===events[questionIndex()].name)b.classList.add('correct')}
+ $('feedback').textContent=ok?'正解！ この位置と前後の出来事を覚えましょう。':'正解は「'+events[questionIndex()].name+'」です。年表の位置を確認しましょう。';
+ $('next').hidden=false;$('next').textContent=ok?'次へ →':'正解を確認して次へ →';
+}
+$('next').onclick=()=>{if(!answered)return;if(reviewIndex!==null){reviewIndex=null}else if(wasCorrect){frontier++;try{localStorage.setItem(key,String(frontier))}catch{}}render()};
+$('review').onclick=()=>{if(frontier===0){$('feedback').textContent='まず最初の出来事を覚えてください。';return}reviewIndex=Math.floor(Math.random()*frontier);render()};
+$('reset').onclick=()=>{if(!confirm('学習進捗を消して最初からやり直しますか？'))return;frontier=0;reviewIndex=null;try{localStorage.removeItem(key)}catch{}render()};
+render();
+</script></body></html>
