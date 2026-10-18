@@ -1,0 +1,10 @@
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const root=path.join(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+new vm.Script(html.match(/<script>([\s\S]*?)<\/script>/)[1]);
+if (/<script[^>]+src=|<link[^>]+href=/i.test(html)) throw new Error('Expected self-contained offline app');
+fs.mkdirSync(path.join(root,'dist'),{recursive:true});
+fs.copyFileSync(path.join(root,'index.html'),path.join(root,'dist/index.html'));
+console.log('Built dist/index.html (self-contained, syntax checked)');
