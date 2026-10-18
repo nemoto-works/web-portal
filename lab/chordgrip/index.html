@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ChordGrip — コード練習</title>
+  <style>
+    :root{
+      --bg:#101217; --panel:#1d222c; --wood1:#4a2c17; --wood2:#6a401f;
+      --line:#eee7d8; --fret:#b7a789; --nut:#f4dfaa; --accent:#ffcf56; --ok:#6ee78e;
+      --text:#f7f1e7; --muted:#aeb6c2; --danger:#ff9d9d;
+    }
+    *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none;}
+    body{margin:0; font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); overflow:auto;}
+    .app{min-height:100dvh; display:grid; grid-template-rows:auto 1fr auto; gap:8px; padding:10px;}
+    header{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+    h1{font-size:18px; margin:0; letter-spacing:.03em;}
+    .hint{font-size:12px; color:var(--muted);}
+    .controls{display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:flex-end;}
+    select,button{border:0; border-radius:14px; padding:10px 12px; background:var(--panel); color:var(--text); font-size:15px;}
+    button{background:#2b3241; cursor:pointer;}
+    button.primary{background:var(--accent); color:#241800; font-weight:800;}
+
+    /* 画面＝実際に握るネック。必要なフレットだけ大きく表示 */
+    .stage{position:relative; background:linear-gradient(90deg,var(--wood1),var(--wood2)); border-radius:24px; overflow:hidden; border:1px solid rgba(255,255,255,.10); box-shadow:0 10px 30px rgba(0,0,0,.35); min-height:54dvh;}
+    .head-label{position:absolute; left:8px; top:8px; z-index:20; background:rgba(0,0,0,.42); border:1px solid rgba(255,255,255,.18); color:#fff7df; border-radius:999px; padding:6px 10px; font-size:13px; font-weight:800;}
+    .body-label{position:absolute; right:8px; top:8px; z-index:20; background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.12); color:#d6deea; border-radius:999px; padding:6px 10px; font-size:12px;}
+    .nut{position:absolute; left:10%; top:0; bottom:0; width:18px; background:var(--nut); box-shadow:5px 0 14px rgba(0,0,0,.45); z-index:4;}
+    .fret{position:absolute; top:0; bottom:0; width:5px; background:var(--fret); opacity:.95; z-index:2; box-shadow:0 0 7px rgba(0,0,0,.30);}
+    .fret-num{position:absolute; bottom:6px; transform:translateX(-50%); z-index:3; color:rgba(255,255,255,.60); font-size:12px; font-weight:700;}
+    .string{position:absolute; left:7%; right:5%; background:var(--line); box-shadow:0 0 8px rgba(255,255,255,.25); z-index:5;}
+    .string.s6{height:6px}.string.s5{height:5px}.string.s4{height:4px}.string.s3{height:3px}.string.s2{height:2.5px}.string.s1{height:2px}
+    .label{position:absolute; left:10px; transform:translateY(-50%); font-size:13px; color:#16100a; background:rgba(255,255,255,.80); border-radius:10px; padding:3px 7px; z-index:8; font-weight:800;}
+    .dot{position:absolute; width:min(10vw,9vh,56px); height:min(10vw,9vh,56px); border-radius:50%; transform:translate(-50%,-50%); display:grid; place-items:center; background:var(--accent); color:#251900; font-weight:900; font-size:clamp(18px,3vw,28px); z-index:10; box-shadow:0 10px 20px rgba(0,0,0,.40); border:4px solid rgba(255,255,255,.72);}
+    .dot .sub{font-size:10px; display:block; line-height:1; opacity:.85; margin-top:-2px;}
+    .dot.hit{background:var(--ok);}
+    .tapzone{position:absolute; transform:translate(-50%,-50%); width:min(15vw,13vh,76px); height:min(10vw,10vh,58px); border-radius:50%; z-index:12;}
+    .openmark{padding:0;cursor:pointer;position:absolute; left:5.5%; transform:translateY(-50%); width:32px; height:32px; border-radius:50%; border:3px solid var(--accent); color:var(--accent); display:grid; place-items:center; font-size:14px; font-weight:900; z-index:13; background:rgba(0,0,0,.25);}
+    .mute{position:absolute; left:5.5%; transform:translateY(-50%); color:var(--danger); font-size:26px; font-weight:900; z-index:13;}
+    .finger-help{position:absolute; right:10px; bottom:8px; z-index:20; font-size:12px; color:#d6deea; background:rgba(0,0,0,.35); border-radius:12px; padding:7px 9px; line-height:1.45;}
+    .status{background:var(--panel); border-radius:18px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:64px;}
+    .status strong{font-size:16px}.status span{color:var(--muted); font-size:13px;}
+    .riff{display:flex; gap:6px; flex-wrap:wrap; align-items:center; justify-content:flex-end;}
+    .step{border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:7px 9px; color:var(--muted); font-size:13px;}
+    .step.now{background:var(--accent); color:#251900; font-weight:800;}
+    .step.done{background:#263b2d; color:#a6f3bb;}
+    @media (orientation:portrait){
+      .rotate{position:absolute; inset:0; display:grid; place-items:center; background:rgba(17,19,24,.96); z-index:50; text-align:center; padding:24px;}
+      .rotate div{max-width:340px; line-height:1.8;}
+    }
+    @media (orientation:landscape){.rotate{display:none}.app{padding:8px 12px}.stage{min-height:56dvh} header{min-height:46px}.status{height:70px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div><h1>ChordGrip <small style="font-size:11px;color:var(--muted)">LAB試作</small></h1><div class="hint">左がヘッド側。スマホをネックみたいに横持ちして押さえる</div></div>
+      <div class="controls">
+        <a href="../" style="color:var(--muted);font-size:13px">LABへ</a>
+        <select id="mode" aria-label="練習モード">
+          <option value="chord">コード練習</option>
+          <option value="riff">例題フレーズ</option>
+        </select>
+        <select id="chord" aria-label="コード"></select>
+        <button id="play" class="primary">鳴らす</button>
+        <button id="reset">リセット</button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage" aria-label="guitar grip trainer"></main>
+
+    <section class="status">
+      <div><strong id="title">Em</strong><br><span id="message" role="status" aria-live="polite">丸ポチの数字は指番号です</span></div>
+      <div class="riff" id="riff"></div>
+    </section>
+  </div>
+  <div class="rotate"><div>横向きにしてください。<br>左がヘッド側、右がボディ側です。<br>数字はギターで一般的な指番号：1人差し指 / 2中指 / 3薬指 / 4小指。</div></div>
+
+  <script>
+    const stage = document.getElementById('stage');
+    const chordSelect = document.getElementById('chord');
+    const modeSelect = document.getElementById('mode');
+    const title = document.getElementById('title');
+    const message = document.getElementById('message');
+    const riffEl = document.getElementById('riff');
+    const playBtn = document.getElementById('play');
+    const resetBtn = document.getElementById('reset');
+
+    // string number: 6=low E, 1=high E. fret 0=open, x=mute.
+    // finger: 1=人差し指, 2=中指, 3=薬指, 4=小指。一般的な押さえ方の一例。
+    const chords = {
+      'Em': [{s:6,f:0},{s:5,f:2,finger:2},{s:4,f:2,finger:3},{s:3,f:0},{s:2,f:0},{s:1,f:0}],
+      'Am': [{s:6,f:'x'},{s:5,f:0},{s:4,f:2,finger:2},{s:3,f:2,finger:3},{s:2,f:1,finger:1},{s:1,f:0}],
+      'C':  [{s:6,f:'x'},{s:5,f:3,finger:3},{s:4,f:2,finger:2},{s:3,f:0},{s:2,f:1,finger:1},{s:1,f:0}],
+      'G':  [{s:6,f:3,finger:2},{s:5,f:2,finger:1},{s:4,f:0},{s:3,f:0},{s:2,f:0},{s:1,f:3,finger:3}],
+      'D':  [{s:6,f:'x'},{s:5,f:'x'},{s:4,f:0},{s:3,f:2,finger:1},{s:2,f:3,finger:3},{s:1,f:2,finger:2}],
+    };
+
+    // 2音の位置確認用モチーフ。実曲・パワーコードの再現ではない。
+    const riff = [
+      {name:'0-3', notes:[{s:6,f:0,label:'開'},{s:5,f:3,label:'3'}]},
+      {name:'0-5', notes:[{s:6,f:0,label:'開'},{s:5,f:5,label:'3'}]},
+      {name:'0-6', notes:[{s:6,f:0,label:'開'},{s:5,f:6,label:'4'}]},
+      {name:'0-5', notes:[{s:6,f:0,label:'開'},{s:5,f:5,label:'3'}]},
+      {name:'0-3', notes:[{s:6,f:0,label:'開'},{s:5,f:3,label:'3'}]},
+      {name:'0-5', notes:[{s:6,f:0,label:'開'},{s:5,f:5,label:'3'}]},
+    ];
+
+    let audioCtx;
+    const pending = new Set();
+    let advancing = false;
+    function later(callback, delay) {
+      const id = setTimeout(() => { pending.delete(id); callback(); }, delay);
+      pending.add(id);
+    }
+    function cancelPending() {
+      pending.forEach(clearTimeout); pending.clear(); advancing = false;
+    }
+    let hits = new Set();
+    let riffIndex = 0;
+    let maxFret = 3;
+
+    Object.keys(chords).forEach(c => {
+      const opt = document.createElement('option'); opt.value = c; opt.textContent = c; chordSelect.appendChild(opt);
+    });
+
+    const openFreq = {6:82.41,5:110.00,4:146.83,3:196.00,2:246.94,1:329.63};
+    function freq(s,f){ return openFreq[s] * Math.pow(2, Number(f)/12); }
+    function ensureAudio(){
+      try {
+        const Audio = window.AudioContext || window.webkitAudioContext;
+        if (!Audio) { message.textContent = 'このブラウザでは音声を利用できません。指位置の練習は続けられます。'; return false; }
+        audioCtx ||= new Audio();
+        if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+        return true;
+      } catch { message.textContent = '音声を開始できません。指位置の練習は続けられます。'; return false; }
+    }
+    function pluck(s,f,dur=0.55){
+      if (!ensureAudio()) return;
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq(s, f);
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.20, t+0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t); osc.stop(t+dur+0.04);
+    }
+
+    function xForFret(f){
+      if(Number(f) === 0) return 6.3;
+      const nut = 10, right = 94;
+      return nut + ((Number(f)-0.5) / maxFret) * (right-nut);
+    }
+    function yForString(s){ return 16 + ((6 - s) / 5) * 68; }
+
+    function baseBoard(frets=3){
+      maxFret = frets;
+      stage.innerHTML = '<div class="head-label">← ヘッド側</div><div class="body-label">ボディ側 →</div><div class="nut"></div>';
+      for(let i=1;i<=maxFret;i++){
+        const x = 10 + (i/maxFret)*84;
+        const fret = document.createElement('div'); fret.className='fret'; fret.style.left = `${x}%`; stage.appendChild(fret);
+        const num = document.createElement('div'); num.className='fret-num'; num.style.left = `${10 + ((i-.5)/maxFret)*84}%`; num.textContent = `${i}F`; stage.appendChild(num);
+      }
+      for(let s=6;s>=1;s--){
+        const string = document.createElement('div'); string.className=`string s${s}`; string.style.top = `${yForString(s)}%`; stage.appendChild(string);
+        const lab = document.createElement('div'); lab.className='label'; lab.style.top = `${yForString(s)}%`; lab.textContent = `${s}弦`; stage.appendChild(lab);
+      }
+      const help = document.createElement('div'); help.className='finger-help'; help.innerHTML='指番号：1人差し指 / 2中指<br>3薬指 / 4小指'; stage.appendChild(help);
+    }
+
+    function drawChord(){
+      baseBoard(3); hits.clear(); riffEl.innerHTML=''; chordSelect.style.display='';
+      const name = chordSelect.value;
+      title.textContent = name;
+      message.textContent = '数字＝指番号。各位置をタップして確認（同時押し判定ではありません）。';
+      chords[name].forEach(n => {
+        const y = yForString(n.s);
+        if(n.f === 'x') { const m=document.createElement('div'); m.className='mute'; m.style.top=`${y}%`; m.textContent='×'; stage.appendChild(m); return; }
+        if(n.f === 0) { const o=document.createElement('button'); o.type='button'; o.className='openmark'; o.setAttribute('aria-label', `${n.s}弦 開放`); o.style.top=`${y}%`; o.textContent='○'; o.onclick=()=>pluck(n.s,0); stage.appendChild(o); return; }
+        addDot(n.s, Number(n.f), `${n.s}-${n.f}`, String(n.finger));
+      });
+    }
+
+    function addDot(s,f,key,label){
+      const dot = document.createElement('div'); dot.className='dot'; dot.style.left=`${xForFret(f)}%`; dot.style.top=`${yForString(s)}%`; dot.innerHTML=`${label}<span class="sub">指</span>`;
+      const zone = document.createElement('button'); zone.type='button'; zone.className='tapzone'; zone.style.background='transparent'; zone.setAttribute('aria-label', `${s}弦 ${f}フレット 指${label}`); zone.style.left=dot.style.left; zone.style.top=dot.style.top;
+      zone.onclick = () => {
+        pluck(s,f);
+        hits.add(key); dot.classList.add('hit');
+        checkSuccess();
+      };
+      stage.appendChild(dot); stage.appendChild(zone);
+    }
+
+    function checkSuccess(){
+      if(modeSelect.value === 'chord'){
+        const required = chords[chordSelect.value].filter(n => n.f !== 'x' && n.f !== 0).map(n => `${n.s}-${n.f}`);
+        if(required.every(k => hits.has(k))) message.textContent = `${chordSelect.value} 完成！この指の形で覚える。`;
+      }else{
+        const req = riff[riffIndex].notes.map(n=>`${n.s}-${n.f}`);
+        if(!advancing && req.every(k=>hits.has(k))){
+          advancing = true;
+          message.textContent = `OK: ${riff[riffIndex].name}`;
+          later(()=>{ advancing = false; riffIndex = (riffIndex+1) % riff.length; drawRiff(); }, 450);
+        }
+      }
+    }
+
+    function drawRiff(){
+      baseBoard(6); hits.clear(); chordSelect.style.display='none';
+      title.textContent = '2音の位置確認フレーズ';
+      message.textContent = '表示された2音を押さえて、次のステップへ。';
+      riffEl.innerHTML='';
+      riff.forEach((r,i)=>{ const e=document.createElement('div'); e.className='step '+(i===riffIndex?'now':i<riffIndex?'done':''); e.textContent=r.name; riffEl.appendChild(e); });
+      riff[riffIndex].notes.forEach(n => {
+        if(n.f === 0){
+          const o=document.createElement('button'); o.type='button'; o.className='openmark'; o.setAttribute('aria-label', `${n.s}弦 開放`); o.style.top=`${yForString(n.s)}%`; o.textContent='○';
+          o.onclick=()=>{pluck(n.s,0); hits.add(`${n.s}-0`); checkSuccess();}; stage.appendChild(o);
+        } else addDot(n.s,n.f,`${n.s}-${n.f}`,n.label);
+      });
+    }
+
+    function playCurrent(){
+      cancelPending();
+      ensureAudio();
+      if(modeSelect.value === 'chord'){
+        chords[chordSelect.value].forEach((n,i)=>{ if(n.f !== 'x') later(()=>pluck(n.s, Number(n.f), .7), i*80); });
+      }else{
+        riff.forEach((r,i)=>{ r.notes.forEach((n,j)=> later(()=>pluck(n.s,n.f,.45), i*360+j*40)); });
+      }
+    }
+
+    modeSelect.onchange = () => {
+      cancelPending();
+      if(modeSelect.value === 'chord') drawChord(); else {riffIndex=0; drawRiff();}
+    };
+    chordSelect.onchange = () => { cancelPending(); drawChord(); };
+    playBtn.onclick = playCurrent;
+    resetBtn.onclick = () => { cancelPending(); riffIndex=0; modeSelect.value === 'chord' ? drawChord() : drawRiff(); };
+    document.addEventListener('visibilitychange', () => { if(document.hidden) cancelPending(); });
+    drawChord();
+  </script>
+</body>
+</html>
