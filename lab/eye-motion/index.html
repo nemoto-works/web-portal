@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="奥から迫る球を目で追い、タイミングよくタップするスマホ向けLAB試作です。">
+  <title>Eye Motion — Nemoto Works LAB</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <a class="back" href="../">← LAB</a>
+      <h1>Eye Motion</h1>
+      <span aria-hidden="true">●</span>
+    </header>
+    <section class="stats" aria-label="プレイ状況">
+      <p class="stat"><span>SCORE</span><strong id="score">0</strong></p>
+      <p class="stat"><span>COMBO</span><strong id="combo">0</strong></p>
+    </section>
+    <section class="stage-wrap" aria-label="ゲーム画面">
+      <canvas id="stage" aria-label="奥から手前へ球が迫る3レーンの画面"></canvas>
+      <p class="status" id="status" role="status">開始すると球が奥から近づきます</p>
+      <div class="lanes" aria-label="レーン操作">
+        <button class="lane" type="button" data-lane="-1" aria-label="左レーン">←</button>
+        <button class="lane" type="button" data-lane="0" aria-label="中央レーン">●</button>
+        <button class="lane" type="button" data-lane="1" aria-label="右レーン">→</button>
+      </div>
+    </section>
+    <div class="actions">
+      <button class="start" id="start" type="button">スタート</button>
+      <p class="note">球が黄色い輪に重なる頃に同じレーンをタップ。約45秒ごとに休憩します。</p>
+    </div>
+    <p class="note">これはゲーム形式の試作品です。視力改善などの医療効果を目的・保証するものではありません。不快感があればすぐ中止してください。</p>
+  </main>
+  <dialog id="rest-dialog" aria-labelledby="rest-title">
+    <h2 id="rest-title">遠くを見て休憩</h2>
+    <p>いったん画面から視線を外し、窓の外など、無理なく見られる実際の遠景を眺めてください。</p>
+    <strong class="count" id="rest-count">20</strong>
+    <button class="resume" id="resume" type="button" disabled>再開</button>
+  </dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
