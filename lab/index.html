@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Nemoto Worksの開発中アプリを試すLAB。"><title>LAB — Nemoto Works</title><link rel="stylesheet" href="../styles.css"><style>
 .lab-wrap{max-width:1000px;margin:auto;padding:70px 24px 100px}.lab-title{font-family:Georgia,'Yu Mincho',serif;font-size:clamp(3rem,9vw,6rem);font-weight:400;margin:0}.lab-lead{font-size:1.1rem;line-height:1.9;max-width:640px}.lab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:45px}.lab-card{border:1px solid var(--line);border-radius:18px;padding:26px;background:#fffdf8}.lab-card h2{font-family:inherit;font-size:1.4rem;font-weight:700;letter-spacing:0}.lab-card p{line-height:1.7}.lab-tag{font-size:.75rem;font-weight:700;letter-spacing:.1em;color:var(--muted)}.lab-link{display:inline-block;margin-top:12px;border-bottom:1px solid;padding-bottom:5px;font-weight:700}.lab-note{margin-top:38px;color:var(--muted);line-height:1.8}nav{flex-wrap:wrap}
+.lab-history{margin-top:90px;border-top:1px solid var(--line);padding-top:54px}
+.lab-history h2{font-size:clamp(2rem,5vw,3.4rem);letter-spacing:-.035em}
+.lab-history-lead{max-width:760px;line-height:1.85;color:var(--muted)}
+.lab-timeline{list-style:none;margin:30px 0 0;padding:0;border-top:1px solid var(--line)}
+.lab-timeline li{display:grid;grid-template-columns:130px 1fr;gap:24px;border-bottom:1px solid var(--line);padding:22px 0}
+.lab-timeline time{font-size:.92rem;font-weight:700;font-variant-numeric:tabular-nums}
+.lab-timeline h3{font-size:1.08rem;margin:0 0 8px}
+.lab-timeline p{margin:0;line-height:1.8;color:var(--muted)}
+.lab-timeline a{text-decoration:underline;text-underline-offset:3px}
+.lab-history-footnote{font-size:.86rem;line-height:1.8;color:var(--muted)}
+@media(max-width:600px){.lab-timeline li{grid-template-columns:1fr;gap:6px}.lab-history{margin-top:64px}}
+
 </style></head><body><header class="site-header"><a class="brand" href="../"><span class="brand-mark" aria-hidden="true">N</span><span>Nemoto Works</span></a><nav aria-label="メインナビゲーション"><a href="../">ホーム</a><a href="../#apps">アプリ</a><a href="./" aria-current="page">LAB</a></nav></header>
 <main class="lab-wrap"><p class="eyebrow">EXPERIMENTS / WORK IN PROGRESS</p><h1 class="lab-title">LAB.</h1><p class="lab-lead">つくりながら、試しながら、育てる実験室。完成前の小さな道具を、実際に触って確かめられる場所です。</p><div class="lab-grid">
 <article class="lab-card"><p class="lab-tag">TRY · 歴史学習</p><h2>歴史のお隣誰だ？</h2><p>日本史・世界史の出来事を、横に広がる年表の前後関係から古い順に覚える穴埋めクイズ。</p><a class="lab-link" href="./history-neighbors/">使ってみる →</a></article>
@@ -9,4 +21,12 @@
 <article class="lab-card"><p class="lab-tag">TRY · 気持ちの切替</p><h2>切替</h2><p>仕事・家族・学習・休息。短い言葉とスイッチで、次の時間へ気持ちを切り替える小さな道具。</p><a class="lab-link" href="./kirikae-switch/">使ってみる →</a></article>
 <article class="lab-card"><p class="lab-tag">TRY · 目で追うリズムゲーム</p><h2>Eye Motion</h2><p>奥から迫る球を目で追い、タイミングよくタップ。ときどき画面を離れて、実際の遠景を見る休憩をはさみます。</p><a class="lab-link" href="./eye-motion/">使ってみる →</a></article>
 <article class="lab-card"><p class="lab-tag">AVAILABLE</p><h2>Visual Timer</h2><p>横バー・円表示で残り時間がわかるタイマー。</p><a class="lab-link" href="../apps/visual-timer/">使ってみる →</a></article>
-</div><p class="lab-note">LABのアプリは試作品です。予告なく仕様や動作が変わる場合があります。個人情報や重要なデータを入力しないでください。</p></main></body></html>
+</div><section class="lab-history" id="history" aria-labelledby="lab-history-title"><p class="eyebrow">RELEASE HISTORY / PORTFOLIO</p><h2 id="lab-history-title">開発・公開の歩み</h2><p class="lab-history-lead">Nemoto Worksで公開してきたアプリとLABの記録です。新しいものから順に並べています。</p><ol class="lab-timeline">
+<li><time datetime="2026-10-19">2026.10.19</time><div><h3><a href="./history-neighbors/">歴史のお隣誰だ？</a></h3><p>日本史・世界史を年表の前後関係で学ぶクイズをLABへ追加。</p></div></li>
+<li><time datetime="2026-10-19">2026.10.19</time><div><h3><a href="./eye-motion/">Eye Motion</a></h3><p>疑似3Dの視線追跡ゲームと遠景を見る休憩機能をLABへ追加。</p></div></li>
+<li><time datetime="2026-10-19">2026.10.19</time><div><h3><a href="./math-decoder/">算数デコーダー</a></h3><p>割り算の筆算を一歩ずつ確認する学習ツールをLABへ追加。</p></div></li>
+<li><time datetime="2026-10-18">2026.10.18</time><div><h3><a href="./chordgrip/">ChordGrip</a></h3><p>コードの指位置と音を確かめるギター練習ツールをLABへ追加。</p></div></li>
+<li><time datetime="2026-10-16">2026.10.16</time><div><h3><a href="./kirikae-switch/">切替</a></h3><p>短い言葉で気持ちを切り替えるツールをLABへ追加。</p></div></li>
+<li><time datetime="2026-10-16">2026.10.16</time><div><h3><a href="./">LABページ</a></h3><p>試作品を一覧して試せるLABページを追加。</p></div></li>
+<li><time datetime="2026-10-15">2026.10.15</time><div><h3><a href="../apps/visual-timer/">Visual Timer</a></h3><p>残り時間をバーと円で示すWebタイマーを追加。</p></div></li>
+</ol><p class="lab-history-footnote">掲載日はGitHubのmainブランチに追加された日付（日本時間）を基準としています。実際のCloudflare Pagesへの反映時刻とは異なる場合があります。主要な公開・更新を記録し、細かな修正は省略しています。</p></section><p class="lab-note">LABのアプリは試作品です。予告なく仕様や動作が変わる場合があります。個人情報や重要なデータを入力しないでください。</p></main></body></html>
