@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="端末内の動画を指定時刻に再生するAndroidアプリ「Video Alarm」の開発状況。">
+  <title>Video Alarm — Nemoto Works LAB</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <style>
+    .wrap{max-width:880px;margin:auto;padding:70px 24px 100px}.hero{padding:36px 0 24px}.hero h1{font-family:Georgia,'Yu Mincho',serif;font-size:clamp(3rem,10vw,6rem);font-weight:400;margin:.15em 0}.lead{font-size:1.15rem;line-height:1.9;max-width:700px}.status{display:inline-block;margin-top:8px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;font-size:.8rem;font-weight:700;letter-spacing:.08em}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:30px}.panel{border:1px solid var(--line);border-radius:20px;padding:26px;background:#fffdf8}.panel h2{margin-top:0;font-size:1.25rem}.panel p,.panel li{line-height:1.8}.checklist{padding-left:1.35em}.note{margin-top:28px;color:var(--muted);line-height:1.8}nav{flex-wrap:wrap}
+  </style>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="../../"><span class="brand-mark" aria-hidden="true">N</span><span>Nemoto Works</span></a><nav aria-label="メインナビゲーション"><a href="../../">ホーム</a><a href="../">LAB</a></nav></header>
+  <main class="wrap">
+    <section class="hero"><p class="eyebrow">LAB · ANDROID APP</p><h1>Video Alarm</h1><p class="lead">朝の体操や学習など、端末内に保存した動画を指定時刻に始めるための個人用Androidアラームです。画面を消して休んでいても、ロック画面から再生できる体験を検証しています。</p><span class="status">実機テスト準備中</span></section>
+    <div class="grid">
+      <section class="panel"><h2>できること</h2><ul class="checklist"><li>端末内のMP4を選ぶ</li><li>毎日または曜日を指定する</li><li>停止・5分スヌーズ</li><li>動画を開けない場合はアラーム音で通知</li></ul></section>
+      <section class="panel"><h2>Androidへの対応</h2><ul class="checklist"><li>正確なアラームの特別なアクセス</li><li>ロック画面向けフルスクリーン通知</li><li>端末再起動後のアラーム再登録</li><li>60秒後の動作テスト</li></ul></section>
+    </div>
+    <section class="panel"><h2>現在の状況</h2><p>最小実装、単体テスト、Android lint、デバッグAPKのビルド、継続的インテグレーションまで完了しています。次は実機で、ロック中の起動、動画再生、スヌーズ、再起動後の維持を確認します。</p></section>
+    <p class="note">このページではAPKを配布していません。動画素材も同梱していません。使用する動画の権利と端末メーカーごとの省電力制限を確認してから、公開範囲を判断します。</p>
+  </main>
+</body>
+</html>
