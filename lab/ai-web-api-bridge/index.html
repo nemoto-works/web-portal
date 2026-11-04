@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Claude・GeminiのWebチャットをAPI対応アプリから使うブリッジ技術の公開仕様調査。実機未検証・規約上の注意点・関連OSSを整理。">
+<title>Web版AIをAPI化できるか？ — Nemoto Works LAB</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+.report{max-width:1000px;margin:auto;padding:64px 24px 110px}.report h1{font-family:Georgia,'Yu Mincho',serif;font-size:clamp(2.5rem,6vw,5rem);line-height:1.16;letter-spacing:-.04em;max-width:900px}.report h2{font-size:clamp(1.55rem,3vw,2.4rem);font-family:inherit;font-weight:700;letter-spacing:-.025em;line-height:1.4;margin:60px 0 20px}.report h3{font-size:1.2rem;margin:24px 0 8px}.report p,.report li{line-height:1.9}.report a{text-decoration:underline;text-underline-offset:3px}.report .meta,.report .muted{color:var(--muted)}.lead{font-size:1.12rem;max-width:800px}.notice{background:#fffdf8;border:1px solid var(--line);padding:22px;border-radius:12px;margin:28px 0}.notice strong{display:block;margin-bottom:8px}.summary{background:var(--ink);color:var(--paper);border-radius:18px;padding:30px;margin:36px 0}.summary p{margin:0}.table-scroll{overflow-x:auto}.report table{border-collapse:collapse;width:100%;min-width:650px;background:#fffdf8}.report th,.report td{text-align:left;vertical-align:top;padding:15px;border-bottom:1px solid var(--line);line-height:1.7}.report th{background:#e9e8df}.status{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:.78rem}.sources li{overflow-wrap:anywhere}.back{display:inline-block;margin-bottom:32px}.flow{display:grid;gap:9px;max-width:620px;margin:26px auto;text-align:center}.flow>div{border:1px solid var(--line);background:#fffdf8;border-radius:12px;padding:16px}.flow .arrow{background:none;border:0;padding:0;color:var(--muted)}@media(max-width:600px){.report{padding-top:40px}.report th,.report td{padding:11px;font-size:.9rem}}
+</style>
+</head>
+<body>
+<header class="site-header"><a class="brand" href="../../"><span class="brand-mark" aria-hidden="true">N</span><span>Nemoto Works</span></a><nav aria-label="メインナビゲーション"><a href="../../">ホーム</a><a href="../">LAB</a></nav></header>
+<main class="report">
+<a class="back" href="../">← LABへ戻る</a>
+<p class="eyebrow">LAB / PUBLIC RESEARCH NOTE 001</p>
+<h1>Web版AIを<br>APIとして使えるか？</h1>
+<p class="lead">ClaudeやGeminiのWebチャットを、APIキーを要求するアプリから利用したい。既存のオープンソース実装と、実用・規約上の境界を公開情報から整理しました。</p>
+<p class="meta"><time datetime="2026-11-04">2026年11月4日</time> 調査版 v0.1 ｜ 対象：Claude Web / Gemini Web</p>
+<div class="notice"><strong>調査の範囲</strong>GitHubの公開説明・公式ヘルプ・利用規約に基づくデスク調査です。各ツールのソースコード全体の監査、Macでの起動、ログイン、API応答の実機検証は実施していません。ここでの「対応」は開発元の自己申告を含み、動作を保証しません。規約に反する利用を推奨するものでもありません。</div>
+<div class="summary"><p><strong>暫定結論：</strong>Web画面や非公開通信をOpenAI互換APIへ変換する非公式OSSは複数存在する。しかし「個人のWeb利用枠を任意のアプリから追加API料金なしに使う」ことが、公式に許可され、安定稼働するとは確認できない。特にClaudeでは第三者ツールへのサブスクリプション枠流用に明示的な制約がある。</p></div>
+<h2>なぜ調べるのか</h2>
+<p>ノートアプリや個人開発ツールには、AI機能の利用にAPIキーと従量課金を要求するものがある。一方、普段はWeb版のチャットAIを使っている。「Web版で使えるAIを、API対応アプリからも呼び出せないか」という疑問から出発した。</p>
+<div class="flow" aria-label="APIブリッジの概念図"><div>ノートアプリ・エディタ・自作ツール<br><small>OpenAI互換APIリクエスト</small></div><div class="arrow">↓</div><div><strong>ローカル AI Bridge</strong><br><small>リクエスト形式・応答形式の変換</small></div><div class="arrow">↓</div><div>Claude Web / Gemini Web<br><small>※非公式接続または個別に認可された経路</small></div></div>
+<h2>公開OSSの比較</h2>
+<div class="table-scroll"><table><thead><tr><th>プロジェクト</th><th>対象・方式</th><th>公開仕様で確認した特徴</th><th>位置付け</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/damianofalcioni/browser-llm-bridge" rel="noopener noreferrer">browser-llm-bridge</a></td><td>Claude Web / ChatGPT Web、ブラウザ操作</td><td>ローカルのOpenAI互換RESTブリッジ。作者自身がPoCと表記。</td><td>Claude Web方式の参考</td></tr>
+<tr><td><a href="https://github.com/aurora-develop/Claude2api" rel="noopener noreferrer">Claude2api</a></td><td>Claude Web、非公式接続</td><td>API形式への変換を掲げる。内部仕様・認証に依存。</td><td>規約・安全性の要検討例</td></tr>
+<tr><td><a href="https://github.com/FarisHijazi/gemini-web-api" rel="noopener noreferrer">gemini-web-api (FarisHijazi)</a></td><td>Gemini Web</td><td>OpenAI互換API、チャット・ストリーミングなどをREADMEで掲げる。</td><td>Geminiの有力な調査候補</td></tr>
+<tr><td><a href="https://github.com/qutek/gemini-web-api" rel="noopener noreferrer">gemini-web-api (qutek)</a></td><td>Gemini Web、Node.js</td><td>Webアプリ向けの非公式OpenAI互換APIプロキシ。</td><td>別実装との比較候補</td></tr>
+<tr><td><a href="https://github.com/AI-RedCode/Web-LLM-API-Bridge" rel="noopener noreferrer">Web-LLM-API-Bridge</a></td><td>複数Webチャット</td><td>WebチャットをローカルAPIにまとめる構想。</td><td>複数サービス統合の参考</td></tr>
+<tr><td><a href="https://github.com/router-for-me/CLIProxyAPI" rel="noopener noreferrer">CLIProxyAPI</a></td><td>CLI認証・CLI系クライアント</td><td>OpenAI/Gemini/Claude互換の入口を提供。Web画面を直接API化する方式とは区別が必要。</td><td>API変換層の設計参考</td></tr>
+</tbody></table></div>
+<p class="muted">※各プロジェクトの「対応」とはREADME等での公称。実環境での成功率、最新のモデル対応、継続保守状況は未検証。</p>
+<h2>ClaudeとGeminiでは何が違う？</h2>
+<h3>Claude Web</h3>
+<p>技術的な非公式ブリッジはある。しかしAnthropic公式ヘルプは、サブスクリプションの利用枠が主に自社のネイティブアプリ向けであると説明し、第三者のトラフィックをサブスクリプション枠へ流すことや、クライアントの身元を偽ることを禁止している。個人利用でも自動的に例外にはならない。<a href="https://support.claude.com/en/articles/13189465-log-in-to-your-claude-account" rel="noopener noreferrer">Anthropic公式の認証方針</a></p>
+<h3>Gemini Web</h3>
+<p>非公式API化の実装例は複数ある。ただし、Googleの一般利用規約には、機械可読な指示に反した自動アクセス、保護機構の回避、一定のリバースエンジニアリング等への制限がある。今回、Gemini Webの利用枠を汎用APIへ自由に転用する公式許可は確認できなかった。<a href="https://policies.google.com/terms" rel="noopener noreferrer">Google利用規約</a></p>
+<h2>アプリ側の制約もある</h2>
+<p>APIキー対応と書かれていても、必ずしも接続先URLを変更できるわけではない。外部アプリがOpenAI互換のBase URLを指定できるならローカルブリッジに接続しやすい。一方、公式APIのURLが固定されたアプリでは、アプリ側の改修が必要になる。さらに、ブラウザアプリではCORSやContent Security Policyも確認する必要がある。</p>
+<h2>個人利用でも注意したいこと</h2>
+<ul><li><strong>規約：</strong>非公開プロトコルやWeb画面の自動操作は、実装が存在しても利用許可を意味しない。</li><li><strong>アカウント：</strong>認証Cookie・セッショントークンを第三者製のソフトへ渡すと、アカウント乗っ取り等の危険がある。</li><li><strong>機能互換：</strong>テキスト応答ができても、ストリーミング・画像・ツール呼び出し・モデル指定まで一致するとは限らない。</li><li><strong>安定性：</strong>Web UIや内部APIの変更、レート制限、ログイン認証の変更で停止し得る。</li><li><strong>料金：</strong>Webプランの利用枠と公式APIの従量課金は通常別物。「API無料化」を保証する仕組みではない。</li></ul>
+<h2>現時点の評価と次の検証項目</h2>
+<div class="table-scroll"><table><thead><tr><th>検証テーマ</th><th>現状</th><th>次に確認すること</th></tr></thead><tbody>
+<tr><td>Web版 → OpenAI互換APIの変換</td><td><span class="status">公開実装あり</span></td><td>API仕様・エラー・モデル指定の互換性</td></tr>
+<tr><td>Gemini Web接続</td><td><span class="status">実機未検証</span></td><td>メンテナンス状況と公式な利用許諾</td></tr>
+<tr><td>Claude Web接続</td><td><span class="status">規約上の制約</span></td><td>正式に認可された代替接続方法</td></tr>
+<tr><td>TakeMyNote等への接続</td><td><span class="status">実機未検証</span></td><td>Base URL変更、CORS・CSP、アプリ改修範囲</td></tr>
+<tr><td>個人利用での長期安定運用</td><td><span class="status">未確認</span></td><td>公式対応状況、セキュリティ、保守体制</td></tr>
+</tbody></table></div>
+<p><strong>研究方針：</strong>「API変換の技術」と「外部AIへの接続許可」は切り分けて検討する。公開実装の比較を継続し、将来公式に利用が認められる接続方式にも置き換えられる構造を目指す。</p>
+<h2>一次資料・参考リンク</h2>
+<ol class="sources"><li><a href="https://support.claude.com/en/articles/13189465-log-in-to-your-claude-account">Anthropic：Claudeアカウントへのログインとサブスクリプション認証</a></li><li><a href="https://policies.google.com/terms">Google：利用規約</a></li><li><a href="https://github.com/damianofalcioni/browser-llm-bridge">browser-llm-bridge（GitHub）</a></li><li><a href="https://github.com/aurora-develop/Claude2api">Claude2api（GitHub）</a></li><li><a href="https://github.com/FarisHijazi/gemini-web-api">gemini-web-api / FarisHijazi（GitHub）</a></li><li><a href="https://github.com/qutek/gemini-web-api">gemini-web-api / qutek（GitHub）</a></li><li><a href="https://github.com/AI-RedCode/Web-LLM-API-Bridge">Web-LLM-API-Bridge（GitHub）</a></li><li><a href="https://github.com/router-for-me/CLIProxyAPI">CLIProxyAPI（GitHub）</a></li></ol>
+<p class="muted">本記事は2026年11月4日時点の公開仕様に関する独立した調査メモです。各プロジェクトやAI提供元からの承認・推奨を受けたものではありません。規約・仕様は変更され得ます。</p>
+<p><a href="../">← LABへ戻る</a></p>
+</main>
+</body></html>
